@@ -71,9 +71,13 @@ for y in train_list:
 
     # create empty lists to store the data for the ideal functions
     ideal_results_list = []
+    '''list for the four ideal functions'''
     y_dev_array_sqrt_sum_list = []
+    '''list for the sum of the y-deviation squared'''
     max_dev_list = []
+    '''list for the maximum y-deviation of the ideal functions and the train data'''
     max_dev_sqrt_list = []
+    '''list for the square root of the maximum y-deviation of the ideal functions and the train data'''
     # create a for loop to find the ideal functions and store the data in the lists
     for i in ideal_range:
         # define the ideal function for y{i} and store result in results-list
@@ -100,14 +104,12 @@ for y in train_list:
         max_dev_sqrt_list.append(max_dev_sqrt)
     # find the least square of the ideal functions and store the data in the dictionary
     min_sqrt_dev = min(y_dev_array_sqrt_sum_list)
-    dict_four_ideal['sqrt_y_dev'].append(min_sqrt_dev)
     # create an index to search for the ideal functions
     min_sqrt_dev_index = y_dev_array_sqrt_sum_list.index(min_sqrt_dev)
-    # store the ideal functions in the dictionary
+    # store the data in the dictionary
+    dict_four_ideal['sqrt_y_dev'].append(min_sqrt_dev)
     dict_four_ideal['ideal_results'].append(ideal_results_list[min_sqrt_dev_index])
-    # store the maximum of the y-deviation in the dictionary
     dict_four_ideal['max_dev'].append(max_dev_list[min_sqrt_dev_index])
-    # store the square root of the maximum of the y-deviation in the dictionary
     dict_four_ideal['max_dev_sqrt'].append(max_dev_sqrt_list[min_sqrt_dev_index])
 
 # create a dataframe from the dictionary
@@ -201,31 +203,30 @@ for x in test_x_array:
     nearest_x_y_list.append(nearest_x_y)
 #%%
 class Dev():
-    '''class to find the deviation of the value from test_y_array and nearest_x_y_list'''
-    def find_deviation(self, column):
+    '''class to find the deviation of the value from test_y_array and given array'''
+    def find_deviation(self, list, column, given_array):
         '''find the deviation of the value from test_y_array and one column of nearest_x_y_list'''
-        self.column = column
-        self.array = np.array(nearest_x_y_list)[:,:,column]
+        self.array = np.array(list)[:,:,column]
         '''create array from one column of nearest_x_y_list'''
         self.array = self.array.ravel()
         '''ravel the array'''
-        self.deviation = self.array - test_y_array
+        self.deviation = self.array - given_array
         '''calculate the deviation of the value from test_y_array and one column of nearest_x_y_list'''
         self.deviation = np.absolute(self.deviation)
         '''calculate the absolute value of the deviation'''
 
 # use the class to find the deviation of the value from test_y_array and one column of nearest_x_y_list
 dev_y1 = Dev()
-dev_y1.find_deviation(1)
+dev_y1.find_deviation(nearest_x_y_list, 1, test_y_array)
 '''find the deviation of the value from test_y_array and y of the first ideal function'''
 dev_y2 = Dev()
-dev_y2.find_deviation(2)
+dev_y2.find_deviation(nearest_x_y_list, 2, test_y_array)
 '''find the deviation of the value from test_y_array and y of the second ideal function'''
 dev_y3 = Dev()
-dev_y3.find_deviation(3)
+dev_y3.find_deviation(nearest_x_y_list, 3, test_y_array)
 '''find the deviation of the value from test_y_array and y of the third ideal function'''
 dev_y4 = Dev()
-dev_y4.find_deviation(4)
+dev_y4.find_deviation(nearest_x_y_list, 4, test_y_array)
 '''find the deviation of the value from test_y_array and y of the fourth ideal function'''
 
 #create dataframe with all deviation data
