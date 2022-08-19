@@ -59,7 +59,7 @@ train_list = train.data.columns.tolist()
 train_list.pop(0)
 '''skip column x to only see results for y-columns'''
 
-#%% create an empty dictionary to store the four ideal functions with the least square sum of the y-deviation with the train data.
+# create an empty dictionary to store the four ideal functions with the least square sum of the y-deviation with the train data.
 dict_four_ideal = {'train_datasets': train_list, 'ideal_results': [], 'sqrt_y_dev': [], 'max_dev': [], 'max_dev_sqrt': []}
 
 # create a for loop to find the four ideal functions with the least square sum of the y-deviation
@@ -132,38 +132,30 @@ ideal_4 = df_four_ideal_data.iloc[:,3]
 train_y4 = train.data.y4
 
 # create four plots for the ideal functions
-class Four_Plot():
-    '''create four plots with two functions each'''
-    def __init__(self, x, x1, graph1_1, graph1_2, x2, graph2_1, graph2_2, x3, graph3_1, graph3_2, x4, graph4_1, graph4_2, legend_elements):
-        '''define two functions for each plot, labels for each function and legend elements'''
-        fig, axs = plt.subplots(2, 2, figsize=(10,10))
-        axs[0, 0].plot(x1, graph1_1, 'b')
-        axs[0,0].plot(x, graph1_2, 'r')
-        axs[0,0].set_title(df_four_ideal.ideal_results[0])
-        axs[0,0].legend(handles=legend_elements, loc='lower right')
-        axs[0,1].plot(x2, graph2_1, 'b')
-        axs[0,1].plot(x, graph2_2, 'r')
-        axs[0,1].set_title(df_four_ideal.ideal_results[1])
-        axs[0,1].legend(handles=legend_elements, loc='lower right')
-        axs[1,0].plot(x3, graph3_1, 'b')
-        axs[1,0].plot(x, graph3_2, 'r')
-        axs[1,0].set_title(df_four_ideal.ideal_results[2])
-        axs[1,0].legend(handles=legend_elements, loc='lower right')
-        axs[1,1].plot(x4, graph4_1, 'b')
-        axs[1,1].plot(x, graph4_2, 'r')
-        axs[1,1].set_title(df_four_ideal.ideal_results[3])
-        axs[1,1].legend(handles=legend_elements, loc='lower right')
-        plt.show()
-        
-
-    def __call__(self, x, x1, graph1_1, graph1_2, x2, graph2_1, graph2_2, x3, graph3_1, graph3_2, x4, graph4_1, graph4_2, legend_elements):
-        self.__init__(x, x1, graph1_1, graph1_2, x2, graph2_1, graph2_2, x3, graph3_1, graph3_2, x4, graph4_1, graph4_2, legend_elements)
-
-# create a new instance of the class
-# plot the ideal functions
-legend_elements = [Line2D([0], [0], color='b', label='Train Function'),
-                   Line2D([0], [0], color='r', label='Ideal Function')]
-four_plot1 = Four_Plot(x_ideal, x_ideal, train_y1, ideal_1, x_ideal, train_y2, ideal_2, x_ideal, train_y3, ideal_3, x_ideal, train_y4, ideal_4, legend_elements)
+fig, axs = plt.subplots(2, 2, figsize=(10,10))
+'''use subplots to create four plots'''
+axs[0, 0].plot(x_ideal, ideal_1, 'r', label='Ideal Function')
+axs[0, 0].plot(x_ideal, train_y1, 'b', label='Train Function')
+axs[0, 0].set_title(df_four_ideal.ideal_results[0])
+'''title of the plot shows the name of the ideal function'''
+axs[0, 0].legend()
+axs[0, 0].grid()
+axs[0, 1].plot(x_ideal, ideal_2, 'r', label='Ideal Function')
+axs[0, 1].plot(x_ideal, train_y2, 'b', label='Train Function')
+axs[0, 1].set_title(df_four_ideal.ideal_results[1])
+axs[0, 1].legend()
+axs[0, 1].grid()
+axs[1, 0].plot(x_ideal, ideal_3, 'r', label='Ideal Function')
+axs[1, 0].plot(x_ideal, train_y3, 'b', label='Train Function')
+axs[1, 0].set_title(df_four_ideal.ideal_results[2])
+axs[1, 0].legend()
+axs[1, 0].grid()
+axs[1, 1].plot(x_ideal, ideal_4, 'r', label='Ideal Function')
+axs[1, 1].plot(x_ideal, train_y4, 'b', label='Train Function')
+axs[1, 1].set_title(df_four_ideal.ideal_results[3])
+axs[1, 1].legend()
+axs[1, 1].grid()
+plt.draw()
 
 
 #%% analyze with test.csv. dict_four_ideal has four ideal functions. Every point from test.csv is compared to the ideal functions. 
@@ -207,31 +199,37 @@ for x in test_x_array:
     # create new dataframe with the nearest x values and ideal functions, create a list to find the nearest y value
     nearest_x_y = pd.DataFrame().assign(x=all_ideal_functions.x[all_ideal_functions.x == nearest_x], y1=all_ideal_functions.y1[all_ideal_functions.x == nearest_x], y2=all_ideal_functions.y2[all_ideal_functions.x == nearest_x], y3=all_ideal_functions.y3[all_ideal_functions.x == nearest_x], y4=all_ideal_functions.y4[all_ideal_functions.x == nearest_x])
     nearest_x_y_list.append(nearest_x_y)
+#%%
+class Dev():
+    '''class to find the deviation of the value from test_y_array and nearest_x_y_list'''
+    def find_deviation(self, column):
+        '''find the deviation of the value from test_y_array and one column of nearest_x_y_list'''
+        self.column = column
+        self.array = np.array(nearest_x_y_list)[:,:,column]
+        '''create array from one column of nearest_x_y_list'''
+        self.array = self.array.ravel()
+        '''ravel the array'''
+        self.deviation = self.array - test_y_array
+        '''calculate the deviation of the value from test_y_array and one column of nearest_x_y_list'''
+        self.deviation = np.absolute(self.deviation)
+        '''calculate the absolute value of the deviation'''
 
-# create arrays for each ideal function where the nearest x value was found 
-nearest_x_y_array = np.array(nearest_x_y_list)
-nearest_x_y1_array = np.array(nearest_x_y_list)[:,:,1]
-'''second column of nearest_x_y_list is the first ideal y value'''
-nearest_x_y1_array = nearest_x_y1_array.ravel()
-'''ravel() flattens the array'''
-nearest_x_y2_array = np.array(nearest_x_y_list)[:,:,2]
-nearest_x_y2_array = nearest_x_y2_array.ravel()
-nearest_x_y3_array = np.array(nearest_x_y_list)[:,:,3]
-nearest_x_y3_array = nearest_x_y3_array.ravel()
-nearest_x_y4_array = np.array(nearest_x_y_list)[:,:,4]
-nearest_x_y4_array = nearest_x_y4_array.ravel()
-# calculate the deviation of each ideal y and test y value and store as new array
-dev_y_1_array = nearest_x_y1_array - test_y_array
-dev_y_2_array = nearest_x_y2_array - test_y_array
-dev_y_3_array = nearest_x_y3_array - test_y_array
-dev_y_4_array = nearest_x_y4_array - test_y_array
-# get the absolute value of the deviation
-dev_y_1_array = np.absolute(dev_y_1_array)
-dev_y_2_array = np.absolute(dev_y_2_array)
-dev_y_3_array = np.absolute(dev_y_3_array)
-dev_y_4_array = np.absolute(dev_y_4_array)
+# use the class to find the deviation of the value from test_y_array and one column of nearest_x_y_list
+dev_y1 = Dev()
+dev_y1.find_deviation(1)
+'''find the deviation of the value from test_y_array and y of the first ideal function'''
+dev_y2 = Dev()
+dev_y2.find_deviation(2)
+'''find the deviation of the value from test_y_array and y of the second ideal function'''
+dev_y3 = Dev()
+dev_y3.find_deviation(3)
+'''find the deviation of the value from test_y_array and y of the third ideal function'''
+dev_y4 = Dev()
+dev_y4.find_deviation(4)
+'''find the deviation of the value from test_y_array and y of the fourth ideal function'''
+
 #create dataframe with all deviation data
-dev_df = pd.DataFrame().assign(dev_y_1=dev_y_1_array, dev_y_2=dev_y_2_array, dev_y_3=dev_y_3_array, dev_y_4=dev_y_4_array)
+dev_df = pd.DataFrame().assign(dev_y_1=dev_y1.deviation, dev_y_2=dev_y2.deviation, dev_y_3=dev_y3.deviation, dev_y_4=dev_y4.deviation)
 # find min value column and min value column name and add it to dataframe
 c = dev_df.columns
 dev_df[c] = dev_df[c].apply(lambda x: pd.to_numeric(x))
@@ -241,6 +239,7 @@ dev_df = dev_df.assign(min_dev = dev_df[c].min(axis=1), min_dev_name = dev_df[c]
 # add x and y test values to dataframe
 dev_df = dev_df.assign(x=test_x_array, y=test_y_array)
 print(dev_df)
+
 
 #%% compare deviation of four ideal with deviation of test data and store the values that do not
 # exceed the four ideal daviation by the factor of sqrt(2) in a new dataframe
@@ -291,58 +290,6 @@ engine = create_engine('sqlite:///test.db')
 test_result_table.to_sql('test', engine, if_exists='replace', index=False)
 
 #%% plot x and y values of test_result_table with each associated ideal_y function
-class test_points_to_list_y(object):
-    def __init__(self, y):
-        self.list = []
-        for i in test_result_table.index:
-            if test_result_table.ideal_y[i] == df_four_ideal.ideal_results[y]:
-                self.list.append(test_result_table.y[i])
-        
-
-test_y1 = test_points_to_list_y(0)
-test_y1 = test_y1.list
-test_y2 = test_points_to_list_y(1)
-test_y2 = test_y2.list
-test_y3 = test_points_to_list_y(2)
-test_y3 = test_y3.list
-test_y4 = test_points_to_list_y(3)
-test_y4 = test_y4.list
-
-class test_points_to_list_x(object):
-    def __init__(self, x):
-        self.list = []
-        for i in test_result_table.index:
-            if test_result_table.ideal_y[i] == df_four_ideal.ideal_results[x]:
-                self.list.append(test_result_table.x[i])
-                
-test_x1 = test_points_to_list_x(0)
-test_x1 = test_x1.list
-test_x2 = test_points_to_list_x(1)
-test_x2 = test_x2.list
-test_x3 = test_points_to_list_x(2)
-test_x3 = test_x3.list
-test_x4 = test_points_to_list_x(3)
-test_x4 = test_x4.list
-
-#%% plot x and y values of test_result_table with each associated ideal_y function
-legend_elements = [Line2D([0], [0], color='r', lw=2, label='Ideal Function'),
-                   Line2D([0], [0], marker='o', color='w', label='Test Point',
-                          markerfacecolor='b', markersize=10)]
-'''create a legend element for the ideal function and test point'''
-four_plot2 = Four_Plot(x_ideal, test_x1, test_y1, ideal_1, test_x2, test_y2, ideal_2, test_x3, test_y3, ideal_3, test_x4, test_y4, ideal_4, legend_elements)
-'''create a Four_Plot object with the ideal functions and test points'''
-four_plot2.plot_four()
-'''plot the ideal functions and test points'''
-four_plot2.show_plot()
-
-'''create a Four_Plot object with the test_points_to_list object and the ideal_function objects'''
-
-
-
-
-
-
-#%%
 fig, axs = plt.subplots(2, 2, figsize=(10,10))
 '''create a figure with 2x2 subplots'''
 legend_elements = [Line2D([0], [0], color='r', lw=2, label='Ideal Function'),
@@ -379,7 +326,6 @@ axs[1, 1].set_title('ideal_y = ' + str(df_four_ideal.ideal_results[3]))
 axs[1, 1].legend(handles=legend_elements, loc='lower right')
 
 plt.show()
-
 
 
 # %%
