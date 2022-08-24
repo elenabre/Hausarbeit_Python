@@ -180,8 +180,7 @@ except NameError:
 all_ideal_functions = pd.DataFrame().assign(x=x_ideal, y1=ideal_1, y2=ideal_2, y3=ideal_3, y4=ideal_4)
 # create arrays for test data
 test_x_array = np.array(data_test.x)
-test_y_list = data_test.y.tolist()
-test_y_array = np.array(test_y_list)
+test_y_array = np.array(data_test.y)
 # create function to find the same or nearest values from test and ideal data
 def find_nearest(array, value):
     '''compare array to a value'''
@@ -246,7 +245,8 @@ print(dev_df)
 test_result = pd.DataFrame()
 for i in dev_df.index:
     if dev_df.min_dev_name[i] == 'dev_y_1':
-        '''if the min deviation is the first ideal deviation, calulate if the deviation is lower than the ideal deviation by the factor of sqrt(2)'''
+        '''if the min deviation is the first ideal deviation, calulate if the deviation is lower 
+        than the ideal deviation by the factor of sqrt(2)'''
         if dev_df.dev_y_1[i] <= df_four_ideal.max_dev[0]*math.sqrt(2):
             '''first column of max_dev is the max deviation of the first ideal function'''
             test_result = test_result.append(dev_df.loc[i])
@@ -271,7 +271,7 @@ except NameError:
 test_result_table = pd.DataFrame().assign(x=test_result.x, y=test_result.y, min_dev=test_result.min_dev, min_dev_name=test_result.min_dev_name,)
 '''use the min_dev and min_dev_name values of test_result to find the y value of the ideal function that has the lowest deviation and drop the other columns'''
 Results = {"dev_y_1": df_four_ideal.ideal_results[0], "dev_y_2": df_four_ideal.ideal_results[1], "dev_y_3": df_four_ideal.ideal_results[2], "dev_y_4": df_four_ideal.ideal_results[3]}
-'''use Results to get the cideal y function column instead of 1, 2, 3, 4'''
+'''use Results to get the ideal y function column instead of 1, 2, 3, 4'''
 test_result_table = test_result_table.assign(ideal_y=test_result_table.min_dev_name.map(Results))
 '''map the min_dev_name values to the ideal_y values'''
 test_result_table.drop(columns=['min_dev_name'], inplace=True)
